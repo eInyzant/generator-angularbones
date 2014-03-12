@@ -1,0 +1,708 @@
+// Generated on <%= (new Date).toISOString().split('T')[0] %> using <%= pkg.name %> <%= pkg.version %>
+'use strict';
+
+// # Globbing
+// for performance reasons we're only matching one level down:
+// 'test/spec/{,*/}*.js'
+// use this if you want to recursively match all subfolders:
+// 'test/spec/**/*.js'
+
+module.exports = function (grunt) {
+
+  // Load grunt tasks automatically
+  require('load-grunt-tasks')(grunt);
+
+  //grunt.loadNpmTasks('grunt-html2js');
+
+  // Time how long tasks take. Can help when optimizing build times
+  require('time-grunt')(grunt);
+
+  // Define the configuration for all the tasks
+  grunt.initConfig({
+
+
+    /**
+     * This is a collection of file patterns that refer to our app code (the
+     * stuff in `src/`). These file paths are used in the configuration of
+     * build tasks. `js` is all project javascript, less tests. `ctpl` contains
+     * our reusable components' (`src/common`) template HTML files, while
+     * `atpl` contains the same, but for our app's code. `html` is just our
+     * main HTML file, `less` is our main stylesheet, and `unit` contains our
+     * app's unit tests.
+     */
+    app_files: {
+      js: ['src/**/*.js', '!src/**/*.spec.js', '!src/assets/**/*.js'],
+      jsunit: ['src/**/*.spec.js'],
+      
+      coffee: [ 'src/**/*.coffee', '!src/**/*.spec.coffee' ],
+      coffeeunit: [ 'src/**/*.spec.coffee' ],
+
+      atpl: [ 'src/app/**/*.tpl.html' ],
+      ctpl: [ 'src/common/**/*.tpl.html' ],
+
+      html: [ 'src/index.html' ],
+      sass: ['src/**/*.{scss,sass}']
+    },
+
+    /**
+     * This is a collection of files used during testing only.
+     */
+    test_files: {
+      js: [
+        'vendor/angular-mocks/angular-mocks.js'
+      ]
+    },
+    
+    /**
+     * This is the same as `app_files`, except it contains patterns that
+     * reference vendor code (`vendor/`) that we need to place into the build
+     * process somewhere. While the `app_files` property ensures all
+     * standardized files are collected for compilation, it is the user's job
+     * to ensure non-standardized (i.e. vendor-related) files are handled
+     * appropriately in `vendor_files.js`.
+     *
+     * The `vendor_files.js` property holds files to be automatically
+     * concatenated and minified with our project source files.
+     *
+     * The `vendor_files.css` property holds any CSS files to be automatically
+     * included in our app.
+     *
+     * The `vendor_files.assets` property holds any assets to be copied along
+     * with our app's assets. This structure is flattened, so it is not
+     * recommended that you use wildcards.
+     */
+    vendor_files: {
+      js: [
+        'vendor/angular/angular.min.js',
+        'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
+        'vendor/bower-angular-placeholders/angular-placeholders.min.js',
+        'vendor/angular-ui-router/release/angular-ui-router.js',
+        'vendor/angular-ui-utils/modules/route/route.js'
+      ],
+      css: [
+      ],
+      assets: [
+      ]
+    },
+
+    // Project settings
+    yeoman: {
+      // configurable paths
+      src: 'src',
+      app: require('./bower.json').appPath || 'src/app',
+      comon: 'src/common',
+      bin_dir: 'bin',
+      build_dir: 'build'
+    },
+
+    // Watches files for changes and runs tasks based on the changed files
+    watch: {<% if (coffee) { %>
+      coffeesrc: {
+        files: ['<%%= app_files.coffee %>'],
+        tasks: ['newer:coffee:bin_dir', 'copy:build_appjs']
+      },
+      coffeeunit: {
+        files: ['<%%= app_files.coffeeunit %>'],
+        tasks: ['newer:coffee:test', 'karma']
+      },<% } else { %>
+      jssrc: {
+        files: ['<%%= app_files.js %>'],
+        tasks: ['newer:jshint:all', 'copy:build_appjs'],
+        options: {
+          livereload: true
+        }
+      },
+      jsunit: {
+        files: ['<%%= app_files.jsunit %>'],
+        tasks: ['newer:jshint:test', 'karma']
+      },<% } %>
+
+      assets: {
+        files: [ 
+          '<%%= yeoman.src %>/assets/**/*'
+        ],
+        tasks: [ 'copy:build_assets' ]
+      },
+      html: {
+        files: [ '<%%= app_files.html %>' ],
+        tasks: [ 'index:build' ]
+      },
+
+      tpls: {
+        files: [ 
+          '<%%= app_files.atpl %>', 
+          '<%%= app_files.ctpl %>'
+        ],
+        tasks: [ 'html2js' ]
+      },
+      
+
+      compass: {
+        files: ['<%%= app_files.sass %>'],
+        tasks: ['compass:server', 'autoprefixer']
+      },
+      gruntfile: {
+        files: ['Gruntfile.js'],
+        tasks: ['jshint:gruntfile']
+      },
+      livereload: {
+        options: {
+          livereload: '<%%= connect.options.livereload %>'
+        },
+        files: [
+          '<%%= app_files.html %>',
+          '<%%= app_files.atpl %>',
+          '<%%= app_files.ctpl %>',
+          '<%%= yeoman.build_dir %>/assets/styles/{,*/}*.css',<% if (coffee) { %>
+          '<%%= yeoman.build_dir %>/assets/scripts/{,*/}*.js',<% } %>
+          'assets/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
+        ]
+      }
+    },
+
+    // The actual grunt server settings
+    connect: {
+      options: {
+        port: 9000,
+        // Change this to '0.0.0.0' to access the server from outside.
+        hostname: 'localhost',
+        livereload: 35729
+      },
+      livereload: {
+        options: {
+          open: true,
+          base: [
+            '<%%= yeoman.build_dir %>',
+            '<%%= yeoman.src %>'
+          ]
+        }
+      },
+      test: {
+        options: {
+          port: 9001,
+          base: [
+            '<%%= yeoman.build_dir %>',
+            '<%%= yeoman.src %>'
+          ]
+        }
+      },
+      bin_dir: {
+        options: {
+          base: '<%%= yeoman.bin_dir %>'
+        }
+      }
+    },
+
+    // Make sure code styles are up to par and there are no obvious mistakes
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
+      },
+      all: [
+        'Gruntfile.js'<% if (!coffee) { %>,
+        '<%%= yeoman.app %>/{,*/}*.js'<% } %>
+      ]<% if (!coffee) { %>,
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        src: ['test/{,*/}*.spec.js']
+      }<% } %>
+    },
+
+
+    /**
+     * The `index` task compiles the `index.html` file as a Grunt template. CSS
+     * and JS files co-exist here but they get split apart later.
+     */
+    index: {
+
+      /**
+       * During development, we don't want to have wait for compilation,
+       * concatenation, minification, etc. So to avoid these steps, we simply
+       * add all script files directly to the `<head>` of `index.html`. The
+       * `src` property contains the list of included files.
+       */
+      build: {
+        dir: '<%%= yeoman.build_dir %>',
+        src: [
+          '<%%= vendor_files.js %>',
+          '<%%= build_dir %>/src/**/*.js',
+          '<%%= html2js.common.dest %>',
+          '<%%= html2js.app.dest %>',
+          '<%%= vendor_files.css %>',
+          '<%%= yeoman.build_dir %>/assets/styles'
+        ]
+      },
+
+      /**
+       * When it is time to have a completely compiled application, we can
+       * alter the above to include only a single JavaScript and a single CSS
+       * file. Now we're back!
+       */
+      compile: {
+        dir: '<%%= yeoman.bin_dir %>',
+        src: [
+          '<%%= concat.compile_js.dest %>',
+          '<%%= vendor_files.css %>',
+          '<%%= yeoman.build_dir %>/assets/styles'
+        ]
+      }
+    },
+
+    // Add vendor prefixed styles
+    autoprefixer: {
+      options: {
+        browsers: ['last 1 version']
+      },
+      bin_dir: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.build_dir %>/assets/styles/',
+          src: '{,*/}*.css',
+          dest: '<%%= yeoman.build_dir %>/assets/styles/'
+        }]
+      }
+    },
+
+    // Automatically inject Bower components into the app
+    bowerInstall: {
+      app: {
+        src: ['<%%= yeoman.app %>/index.html'],
+        ignorePath: '<%%= yeoman.app %>/'
+      },
+      sass: {
+        src: ['<%%= yeoman.app %>/sass/{,*/}*.{scss,sass}'],
+        ignorePath: 'vendor/'
+      }
+    },<% if (coffee) { %>
+
+    // Compiles CoffeeScript to JavaScript
+    coffee: {
+      options: {
+        sourceMap: true,
+        sourceRoot: ''
+      },
+      bin_dir: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.app %>/scripts',
+          src: '{,*/}*.coffee',
+          dest: '<%%= yeoman.build_dir %>/scripts',
+          ext: '.js'
+        }]
+      },
+      test: {
+        files: [{
+          expand: true,
+          cwd: 'test/spec',
+          src: '{,*/}*.coffee',
+          dest: '<%%= yeoman.build_dir %>/spec',
+          ext: '.js'
+        }]
+      }
+    },<% } %>
+
+    // Compiles Sass to CSS and generates necessary files if requested
+    compass: {
+      options: {
+        sassDir: '<%%= yeoman.app %>/sass',
+        cssDir: '<%%= yeoman.build_dir %>/assets/styles',
+        generatedImagesDir: '<%%= yeoman.build_dir %>/assets/images/generated',
+        imagesDir: '<%%= yeoman.app %>/assets/images',
+        javascriptsDir: '<%%= yeoman.app %>/assets/scripts',
+        fontsDir: '<%%= yeoman.app %>/assets/styles/fonts',
+        importPath: 'vendor',
+        httpImagesPath: 'assets/images',
+        httpGeneratedImagesPath: 'assets/images/generated',
+        httpFontsPath: 'assets/styles/fonts',
+        relativeAssets: false,
+        assetCacheBuster: false,
+        raw: 'Sass::Script::Number.precision = 10\n'
+      },
+      bin_dir: {
+        options: {
+          generatedImagesDir: '<%%= yeoman.bin_dir %>/assets/images/generated'
+        }
+      },
+      server: {
+        options: {
+          debugInfo: true
+        }
+      }
+    },
+
+    // Renames files for browser caching purposes
+    rev: {
+      bin_dir: {
+        files: {
+          src: [
+            '<%%= yeoman.bin_dir %>/assets/scripts/{,*/}*.js',
+            '<%%= yeoman.bin_dir %>/assets/styles/{,*/}*.css',
+            '<%%= yeoman.bin_dir %>/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+            '<%%= yeoman.bin_dir %>/assets/styles/fonts/*'
+          ]
+        }
+      }
+    },
+
+    // Reads HTML for usemin blocks to enable smart builds that automatically
+    // concat, minify and revision files. Creates configurations in memory so
+    // additional tasks can operate on them
+    useminPrepare: {
+      html: '<%%= yeoman.app %>/index.html',
+      options: {
+        dest: '<%%= yeoman.bin_dir %>',
+        flow: {
+          html: {
+            steps: {
+              js: ['concat', 'uglifyjs'],
+              css: ['cssmin']
+            },
+            post: {}
+          }
+        }
+      }
+    },
+
+    /**
+     * HTML2JS is a Grunt plugin that takes all of your template files and
+     * places them into JavaScript files as strings that are added to
+     * AngularJS's template cache. This means that the templates too become
+     * part of the initial payload as one JavaScript file. Neat!
+     */
+    html2js: {
+      /**
+       * These are the templates from `src/app`.
+       */
+      app: {
+        options: {
+          base: '<%%= yeoman.app %>'
+        },
+        src: [ '<%%= app_files.atpl %>' ],
+        dest: '<%%= yeoman.build_dir %>/templates-app.js'
+      },
+
+      /**
+       * These are the templates from `src/common`.
+       */
+      common: {
+        options: {
+          base: '<%%= yeoman.common %>'
+        },
+        src: [ '<%%= app_files.ctpl %>' ],
+        dest: '<%%= yeoman.build_dir %>/templates-common.js'
+      }
+    },
+    // Empties folders to start fresh
+    clean: {
+      bin_dir: {
+        files: [{
+          dot: true,
+          src: [
+            '<%%= yeoman.build_dir %>',
+            '<%%= yeoman.bin_dir %>/*',
+            '!<%%= yeoman.bin_dir %>/.git*'
+          ]
+        }]
+      },
+      server: '<%%= yeoman.build_dir %>'
+    },
+
+    // Performs rewrites based on rev and the useminPrepare configuration
+    usemin: {
+      html: ['<%%= yeoman.bin_dir %>/{,*/}*.html'],
+      css: ['<%%= yeoman.bin_dir %>/assets/styles/{,*/}*.css'],
+      options: {
+        assetsDirs: ['<%%= yeoman.bin_dir %>']
+      }
+    },
+
+    // The following *-min tasks produce minified files in the bin_dir folder
+    cssmin: {
+      options: {
+        root: '<%%= yeoman.app %>'
+      }
+    },
+
+    imagemin: {
+      bin_dir: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.app %>/assets/images',
+          src: '{,*/}*.{png,jpg,jpeg,gif}',
+          dest: '<%%= yeoman.bin_dir %>/assets/images'
+        }]
+      }
+    },
+
+    svgmin: {
+      bin_dir: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.app %>/assets/images',
+          src: '{,*/}*.svg',
+          dest: '<%%= yeoman.bin_dir %>/assets/images'
+        }]
+      }
+    },
+
+    htmlmin: {
+      bin_dir: {
+        options: {
+          collapseWhitespace: true,
+          collapseBooleanAttributes: true,
+          removeCommentsFromCDATA: true,
+          removeOptionalTags: true
+        },
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.bin_dir %>',
+          src: ['<%%= app_files.atpl %>', '<%%= app_files.ctpl %>'],
+          dest: '<%%= yeoman.bin_dir %>/view/'
+        }]
+      }
+    },
+
+    // ngmin tries to make the code safe for minification automatically by
+    // using the Angular long form for dependency injection. It doesn't work on
+    // things like resolve or inject so those have to be done manually.
+    ngmin: {
+      bin_dir: {
+        files: [{
+          expand: true,
+          cwd: '<%%= yeoman.build_dir %>/concat/scripts',
+          src: '*.js',
+          dest: '<%%= yeoman.build_dir %>/concat/scripts'
+        }]
+      }
+    },
+
+    // Replace Google CDN references
+    cdnify: {
+      bin_dir: {
+        html: ['<%%= yeoman.bin_dir %>/*.html']
+      }
+    },
+
+    /**
+     * The `copy` task just copies files from A to B. We use it here to copy
+     * our project assets (images, fonts, etc.) and javascripts into
+     * `build_dir`, and then to copy the assets to `bin_dir`.
+     */
+    copy: {
+      bin_dir: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: '<%%= yeoman.app %>',
+          dest: '<%%= yeoman.bin_dir %>',
+          src: [
+            '*.{ico,png,txt}',
+            '.htaccess',
+            '*.html',
+            '{,*/}*.tpl.html',
+            'vendor/**/*',
+            'assets/images/{,*/}*.{webp}',
+            'assets/styles/fonts/*'
+          ]
+        }, {
+          expand: true,
+          cwd: '<%%= yeoman.build_dir %>/assets/images',
+          dest: '<%%= yeoman.bin_dir %>/assets/images',
+          src: ['generated/*']
+        }]
+      },
+      styles: {
+        expand: true,
+        cwd: '<%%= yeoman.app %>/assets/styles',
+        dest: '<%%= yeoman.build_dir %>/assets/styles/',
+        src: '{,*/}*.css'
+      },
+      build_app_assets: {
+        files: [
+          { 
+            src: [ '**' ],
+            dest: '<%%= yeoman.build_dir %>/assets/',
+            cwd: 'src/assets',
+            expand: true
+          }
+       ]   
+      },
+      build_vendor_assets: {
+        files: [
+          { 
+            src: [ '<%%= vendor_files.assets %>' ],
+            dest: '<%%= yeoman.build_dir %>/assets/',
+            cwd: '.',
+            expand: true,
+            flatten: true
+          }
+       ]   
+      },
+      build_appjs: {
+        files: [
+          {
+            src: [ '<%%= app_files.js %>' ],
+            dest: '<%%= yeoman.build_dir %>/',
+            cwd: '.',
+            expand: true
+          }
+        ]
+      },
+      build_vendorjs: {
+        files: [
+          {
+            src: [ '<%%= vendor_files.js %>' ],
+            dest: '<%%= yeoman.build_dir %>/',
+            cwd: '.',
+            expand: true
+          }
+        ]
+      },
+      compile_assets: {
+        files: [
+          {
+            src: [ '**' ],
+            dest: '<%%= yeoman.bin_dir %>/assets',
+            cwd: '<%%= yeoman.build_dir %>/assets',
+            expand: true
+          }
+        ]
+      }
+    },
+
+    // Run some tasks in parallel to speed up the build process
+    concurrent: {
+      server: [<% if (coffee) { %>
+        'coffee:bin_dir',<% } %>
+        'compass:server'
+      ],
+      test: [<% if (coffee) { %>
+        'coffee',<% } %>
+        'compass'
+      ],
+      bin_dir: [<% if (coffee) { %>
+        'coffee',<% } %>
+        'compass:bin_dir',
+        'imagemin',
+        'svgmin'
+      ]
+    },
+
+    // By default, your `index.html`'s <!-- Usemin block --> will take care of
+    // minification. These next options are pre-configured if you do not wish
+    // to use the Usemin blocks.
+    // cssmin: {
+    //   bin_dir: {
+    //     files: {
+    //       '<%%= yeoman.bin_dir %>/styles/main.css': [
+    //         '<%%= yeoman.build_dir %>/styles/{,*/}*.css',
+    //         '<%%= yeoman.app %>/styles/{,*/}*.css'
+    //       ]
+    //     }
+    //   }
+    // },
+    // uglify: {
+    //   bin_dir: {
+    //     files: {
+    //       '<%%= yeoman.bin_dir %>/scripts/scripts.js': [
+    //         '<%%= yeoman.bin_dir %>/scripts/scripts.js'
+    //       ]
+    //     }
+    //   }
+    // },
+    // concat: {
+    //   bin_dir: {}
+    // },
+
+    // Test settings
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js',
+        singleRun: true
+      }
+    }
+  });
+
+
+  grunt.registerTask('serve', function (target) {
+    if (target === 'bin_dir') {
+      return grunt.task.run(['build', 'connect:bin_dir:keepalive']);
+    }
+
+    grunt.task.run([
+      'clean:server',
+      'build',
+      //'bowerInstall',
+      'concurrent:server',
+      'autoprefixer',
+      'connect:livereload',
+      'watch'
+    ]);
+  });
+
+  grunt.registerTask('server', function (target) {
+    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
+    grunt.task.run(['serve:' + target]);
+  });
+
+  grunt.registerTask('test', [
+    'clean:server',
+    'concurrent:test',
+    'autoprefixer',
+    'connect:test',
+    'karma'
+  ]);
+
+/*
+  grunt.registerTask('build', [
+    'clean:bin_dir',
+    'bowerInstall',
+    'useminPrepare',
+    'concurrent:bin_dir',
+    'autoprefixer',
+    'concat',
+    'ngmin',
+    'copy:bin_dir',
+    'cdnify',
+    'cssmin',
+    'uglify',
+    'rev',
+    'usemin',
+    'htmlmin'
+  ]);
+  */
+
+  grunt.registerTask('build', [
+    'clean:bin_dir',
+    'html2js',
+    'useminPrepare',
+    'jshint',<% if (coffee) { %>
+    'coffeelint',
+    'coffee',<% } %>
+    'concurrent:bin_dir',
+    'autoprefixer',
+    'concat',
+    'ngmin',
+    'copy:bin_dir',
+    'copy:build_app_assets',
+    'copy:build_vendor_assets',
+    'copy:build_appjs',
+    'copy:build_vendorjs',
+    'index:build',
+    'cdnify',
+    'cssmin',
+    'uglify',
+    'rev',
+    'usemin',
+    'htmlmin'
+  ]);
+
+  grunt.registerTask('default', [
+    'newer:jshint',
+    'test',
+    'build'
+  ]);
+};
