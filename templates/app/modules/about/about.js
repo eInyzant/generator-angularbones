@@ -1,6 +1,6 @@
 angular.module( '<%= scriptAppName %>.about', [
-  'ui.state',
-  'placeholders'
+  'ui.state'<% if(placeholders) { %>,
+  'placeholders'<% } %>
 ])
 
 .config(function config( $stateProvider ) {

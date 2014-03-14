@@ -51,9 +51,9 @@ var Generator = module.exports = function Generator(args, options) {
     args: args
   });
 
-  this.hookFor('angularbones:main', {
-    args: args
-  });
+  //this.hookFor('angularbones:main', {
+    //args: args
+  //});
 
   this.on('end', function () {
     this.installDependencies({
@@ -96,6 +96,112 @@ Generator.prototype.welcome = function welcome() {
   }
 };
 
+Generator.prototype.askForAppName = function askForAppName() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'input',
+    name: 'appname',
+    message: 'What is the name of your app?',
+    default: this.appname
+  }], function (props) {
+    this.appname = this._.camelize(this._.slugify(this._.humanize(props.appname)));
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForAppVersion = function askForAppVersion() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'input',
+    name: 'appversion',
+    message: 'What is the version of your app?',
+    default: "0.0.1"
+  }], function (props) {
+    this.appversion = props.appversion;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForAuthor = function askForAuthor() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'input',
+    name: 'author',
+    message: 'What is the name of the author?',
+    default: "Erwan INYZANT - Garden Media"
+  }], function (props) {
+    this.author = props.author;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForHomepage = function askForHomepage() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'input',
+    name: 'homepage',
+    message: 'What is the homepage of the app?',
+    default: "http://www.garden-media.fr"
+  }], function (props) {
+    this.homepage = props.homepage;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForLicenceType = function askForLicenceType() {
+  var cb = this.async();
+
+  console.log(chalk.yellow.bold('\nVisit http://choosealicense.com/ should help you choose your licence\n'));
+  this.prompt([{
+    type: 'input',
+    name: 'licence_type',
+    message: 'What is the licence type of the app?',
+    default: "MIT"
+  }], function (props) {
+    this.licence_type = props.licence_type;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForLicenceUrl = function askForLicenceUrl() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'input',
+    name: 'licence_url',
+    message: 'What is the licence url?',
+    default: "http://en.wikipedia.org/wiki/MIT_License"
+  }], function (props) {
+    this.licence_url = props.licence_url;
+
+    cb();
+  }.bind(this));
+};
+
+Generator.prototype.askForSass = function askForSass() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'confirm',
+    name: 'sass',
+    message: 'Would you like to Sass?',
+    default: true
+  }], function (props) {
+    this.sass = props.sass;
+
+    cb();
+  }.bind(this));
+};
+
 Generator.prototype.askForBootstrap = function askForBootstrap() {
   var cb = this.async();
 
@@ -130,6 +236,67 @@ Generator.prototype.askForAngularUiBootstrap = function askForAngularUiBootstrap
   }.bind(this));
 };
 
+Generator.prototype.askForFonts = function askForFonts() {
+  this.hasFont = false;
+  var cb = this.async();
+
+  var prompts = [{
+    type: 'checkbox',
+    name: 'fonts',
+    message: 'Which fonts would you like to use?',
+    choices: [{
+      value: 'glyphicons',
+      name: 'glyphicons',
+      checked: true,
+    }, {
+      value: 'fontawesome',
+      name: 'fontawesome',
+      checked: true
+    }, {
+      value: 'foundationicons',
+      name: 'foundationicons',
+      checked: true
+    }, {
+      value: 'ionicons',
+      name: 'ionicons',
+      checked: true
+    }]
+  }];
+
+  this.prompt(prompts, function (props) {
+    var hasMod = function (mod) { return props.fonts.indexOf(mod) !== -1; };
+    this.glyphicons = hasMod('glyphicons');
+    this.fontawesome = hasMod('fontawesome');
+    this.foundationicons = hasMod('foundationicons');
+    this.ionicons = hasMod('ionicons');
+
+    var fonts = [];
+
+    if (this.glyphicons) {
+      fonts.push("'glyphicons'");
+    }
+
+    if (this.fontawesome) {
+      fonts.push("'fontawesome'");
+    }
+
+    if (this.foundationicons) {
+      fonts.push("'foundationicons'");
+    }
+    if (this.ionicons) {
+      fonts.push("'ionicons'");
+    }
+
+    if (fonts.length) {
+      this.hasFont = true;
+      this.env.options.fonts = '\n    ' + fonts.join(',\n    ') + '\n  ';
+    }
+
+    cb();
+  }.bind(this));
+};
+
+
 Generator.prototype.askForPlaceholders = function askForPlaceholders() {
   var cb = this.async();
 
@@ -140,25 +307,7 @@ Generator.prototype.askForPlaceholders = function askForPlaceholders() {
     default: true
   }], function (props) {
     this.placeholders = props.placeholders;
-
-    cb();
-  }.bind(this));
-};
-
-Generator.prototype.askForFontAwesome = function askForFontAwesome() {
-  var cb = this.async();
-  var bootstrap = this.bootstrap;
-
-  this.prompt([{
-    type: 'confirm',
-    name: 'fontawesome',
-    message: 'Would you like to use Font Awesome?',
-    default: false,
-    when: function(props) {
-      return !bootstrap;
-    }
-  }], function (props) {
-    this.fontawesome = props.fontawesome;
+    this.env.options.placeholders = this.placeholders;
 
     cb();
   }.bind(this));
@@ -231,6 +380,7 @@ Generator.prototype.createIndexHtml = function createIndexHtml() {
 
 Generator.prototype.packageFiles = function () {
   this.coffee = this.env.options.coffee;
+
   this.copy('../../templates/common/_bowerrc', '.bowerrc');
   this.template('../../templates/common/_bower.json', 'bower.json');
   this.template('../../templates/common/_package.json', 'package.json');
@@ -238,11 +388,67 @@ Generator.prototype.packageFiles = function () {
   this.template('../../templates/common/Gruntfile.js', 'Gruntfile.js');
 };
 
+Generator.prototype.applicationFiles = function() {
+  if (this.sass) {
+    this.copy('../../templates/app/modules/home/home.css', './src/app/home/home.scss');
+    this.copy('../../templates/app/modules/about/about.css', './src/app/about/about.scss');
+    if (this.hasFont) {
+      this.copy('../../templates/app/modules/fonts/fonts.css', './src/app/fonts/fonts.scss');
+    }
+  } else {
+    this.copy('../../templates/app/modules/home/home.css', './src/app/home/home.css');
+    this.copy('../../templates/app/modules/about/about.css', './src/app/about/about.css');
+    if (this.hasFont) {
+      this.copy('../../templates/app/modules/fonts/fonts.css', './src/app/fonts/fonts.css');
+    }
+  }
+  // Application files :
+  this.template('../../templates/app/app.js', './src/app/app.js');
+  this.template('../../templates/app/app.spec.js', './src/app/app.spec.js');
+
+  // Home Module
+  this.template('../../templates/app/modules/home/home.js', './src/app/home/home.js');
+  this.template('../../templates/app/modules/home/home.spec.js', './src/app/home/home.spec.js');
+
+  // About Module
+  this.template('../../templates/app/modules/about/_about.tpl.html', './src/app/about/about.tpl.html');
+  this.template('../../templates/app/modules/about/about.js', './src/app/about/about.js');
+
+  if (this.hasFont) {
+    // Fonts Module
+    this.template('../../templates/app/modules/fonts/_fonts.tpl.html', './src/app/fonts/fonts.tpl.html');
+    this.template('../../templates/app/modules/fonts/fonts.js', './src/app/fonts/fonts.js');
+  }
+
+};
+Generator.prototype.assetsFiles = function() {
+  // assets
+  if (this.sass) {
+    this.template('../../templates/assets/sass/_main.scss', './src/sass/main.scss');
+    this.template('../../templates/assets/sass/_custom-variables.scss', './src/sass/custom-variables.scss');
+    if (this.bootstrap) {
+      this.directory('../../templates/assets/sass/bootstrap', './src/sass/.');
+    }
+  } else {
+    this.template('../../templates/assets/sass/_main.scss', './src/assets/styles/main.css');
+  }
+
+    this.template('../../templates/assets/templates/header/_menu.tpl.html', './src/assets/templates/header/menu.tpl.html');
+};
+
 Generator.prototype._injectDependencies = function _injectDependencies() {
-  var howToInstall =
-    '\nAfter running `npm install & bower install`, create your custom-bootstrap.scss' +
-    '\nfile by running:' +
-    '\n' +
-    chalk.yellow.bold('\n  grunt bootstrapInstall');
+    var howToInstall = '\n###########################';
+    howToInstall += '\n########## END ############';
+    howToInstall += '\n###########################';
+    howToInstall += chalk.yellow.bold('\nInstallation is complete!');
+    howToInstall += '\nBe sure to run `npm install & bower install` if it failed (should be automatic)';
+    if (this.hasFont) {
+      howToInstall += '\n\nTo complete your installation you must install font files by running:';
+      howToInstall += chalk.green.bold('\ngrunt install');
+    }
+    howToInstall += '\n\nTo start your application :';
+    howToInstall += chalk.green.bold('\ngrunt watch');
+    howToInstall += '\n###########################';
+    howToInstall += '\n###########################';
     console.log(howToInstall);
 };

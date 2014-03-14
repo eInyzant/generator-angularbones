@@ -2,10 +2,11 @@ angular.module( '<%= scriptAppName %>', [
   'templates-app',
   'templates-common',
   '<%= scriptAppName %>.home',
-  '<%= scriptAppName %>.about',
+  '<%= scriptAppName %>.about'<% if(hasFont) { %>,
+  '<%= scriptAppName %>.fonts'<% } %>,
   'ui.state',
-  'ui.route',
-  'ui.bootstrap'
+  'ui.route'<% if(angularUiBootstrap) {%>,
+  'ui.bootstrap'<% } %>
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {

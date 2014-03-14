@@ -1,3 +1,8 @@
+/*
+var bootstrap = <% if (bootstrap) { %>true<% } else { %>false<% } %>;
+var sass = <% if (sass) { %>true<% } else { %>false<% } %>;
+var coffee = <% if (coffee) { %>true<% } else { %>false<% } %>;
+*/
 module.exports = function ( grunt ) {
   
   /** 
@@ -28,7 +33,7 @@ module.exports = function ( grunt ) {
 
     /**
      * The banner is the comment that is placed at the top of our compiled 
-     * source files. It is first processed as a Grunt template, where the `<%%=`
+     * source files. It is first processed as a Grunt template, where the `< % % =`
      * pairs are evaluated based on this very configuration object.
      */
     meta: {
@@ -85,7 +90,7 @@ module.exports = function ( grunt ) {
             expand: true
           }
         ]
-      },
+      }<% if (sass) { %>,
       sass_files: {
         files: [
           {
@@ -95,7 +100,7 @@ module.exports = function ( grunt ) {
             expand: true
           }
         ]
-      },
+      }<% } %>,
       build_vendor_assets: {
         files: [
           { 
@@ -131,22 +136,53 @@ module.exports = function ( grunt ) {
         files: [
           {
             src: [ '<%%= vendor_files.css %>' ],
-            dest: '<%%= build_dir %>/',
+            dest: '<%%= build_dir %>/assets/styles',
             cwd: '.',
-            expand: true
+            expand: true,
+            flatten: true
           }
         ]
       },
       compile_assets: {
         files: [
           {
-            src: [ '**' ],
+            src: ['**'],
+            filter: function(filepath) {
+              // do not copy css files for now
+              if (grunt.file.isMatch('**/assets/styles/**', filepath)) {
+                return false;
+              } else {
+                return true;
+              }
+            },
             dest: '<%%= compile_dir %>/assets',
             cwd: '<%%= build_dir %>/assets',
             expand: true
           }
         ]
-      }
+      }<% if(hasFont) { %>,
+      fonts_files: {
+        files: [
+          {
+            src: [
+              <% if(sass && bootstrap && glyphicons) { %>
+              'vendor/bootstrap-sass-official/vendor/assets/fonts/bootstrap/glyphicons-halflings-regular.*',<% } else if(bootstrap && glyphicons) { %>
+              'vendor/bootstrap/fonts/glyphicons-halflings-regular.*',<% } else if(!bootstrap && glyphicons) { %>
+              'vendor/sass-bootstrap-glyphicons/fonts/glyphiconshalflings-regular.*',<% } %><% if(fontawesome) { %>
+              'vendor/fontawesome/fonts/fontawesome-webfont.*',<% } %><% if (foundationicons) { %>
+              'vendor/foundation-icons/foundation_icons_accessibility/fonts/accessibility_foundicons.*',
+              'vendor/foundation-icons/foundation_icons_general/fonts/general_foundicons.*',
+              'vendor/foundation-icons/foundation_icons_general_enclosed/fonts/general_enclosed_foundicons.*',
+              'vendor/foundation-icons/foundation_icons_social/fonts/social_foundicons.*',<% } %><% if(ionicons) { %>
+              'vendor/ionicons/fonts/ionicons.*'<% } %>
+            ],
+            dest: '<%%= src_dir %>/assets/fonts/',
+            cws: '.',
+            expand:true,
+            flatten:true
+          }
+        ]
+      }<% } %>
     },
 
     /**
@@ -154,16 +190,15 @@ module.exports = function ( grunt ) {
      */
     concat: {
       /**
-       * The `build_css` target concatenates compiled CSS and vendor CSS
+       * The `compile_css` target concatenates compiled CSS and vendor CSS
        * together.
        */
-      build_css: {
+      compile_css: {
         src: [
-          '<%%= app_files.css %>',
-          '<%%= vendor_files.css %>',
-          '<%%= cssfile.build.dest %>'
+          '<%%= build_dir %>/assets/styles/**/*.css',
+          '<%%= vendor_files.css %>'
         ],
-        dest: '<%%= cssfile.build.dest %>'
+        dest: '<%%= cssfile.compile.dest %>'
       },
       /**
        * The `compile_js` target is the concatenation of our application source
@@ -174,16 +209,16 @@ module.exports = function ( grunt ) {
           banner: '<%%= meta.banner %>'
         },
         src: [ 
-          '<%%= vendor_files.js %>', 
           'module.prefix', 
+          '<%%= vendor_files.js %>', 
           '<%%= build_dir %>/src/**/*.js', 
           '<%%= html2js.app.dest %>', 
           '<%%= html2js.common.dest %>', 
           'module.suffix' 
         ],
-        dest: '<%%= compile_dir %>/assets/<%%= pkg.name %>-<%%= pkg.version %>.js'
+        dest: '<%%= compile_dir %>/assets/js/<%%= pkg.name %>-<%%= pkg.version %>.js'
       }
-    },
+    }<% if(coffee) { %>,
 
     /**
      * `grunt coffee` compiles the CoffeeScript sources. To work well with the
@@ -203,7 +238,7 @@ module.exports = function ( grunt ) {
         dest: '<%%= build_dir %>',
         ext: '.js'
       }
-    },
+    }<% } %><% if (sass) { %>,
 
     // Compiles Sass to CSS and generates necessary files if requested
     compass: {
@@ -214,7 +249,17 @@ module.exports = function ( grunt ) {
         imagesDir: '<%%= src_dir %>/assets/images',
         javascriptsDir: '<%%= src_dir %>/assets/scripts',
         fontsDir: '<%%= src_dir %>/assets/styles/fonts',
-        importPath: ['vendor', 'vendor/bootstrap-sass-official/vendor/assets/stylesheets'],
+        importPath: [
+          'vendor'<% if (bootstrap) { %>,
+          'vendor/bootstrap-sass-official/vendor/assets/stylesheets'<% } %><% if(hasFont) { %><% if(!bootstrap && glyphicons) { %>,
+          'vendor/sass-bootstrap-glyphicons/scss'<% } %><% if(fontawesome) { %>,
+          'vendor/fontawesome/scss'<% } %><%if (foundationicons) { %>,
+          'vendor/foundation-icons/foundation_icons_accessibility/sass',
+          'vendor/foundation-icons/foundation_icons_general/sass',
+          'vendor/foundation-icons/foundation_icons_general_enclosed/sass',
+          'vendor/foundation-icons/foundation_icons_social/sass'<% } %><% if(ionicons) { %>,
+          'vendor/ionicons/scss'<% } %><% } %>
+        ],
         httpImagesPath: '<%%= src_dir %>assets/images',
         httpGeneratedImagesPath: '<%%= build_dir %>assets/images/generated',
         httpFontsPath: '<%%= src_dir %>assets/styles/fonts',
@@ -227,12 +272,17 @@ module.exports = function ( grunt ) {
           generatedImagesDir: '<%%= compile_dir %>/assets/images/generated'
         }
       },
+      compile: {
+        options: {
+          debugInfo: false
+        }
+      },
       server: {
         options: {
           debugInfo: true
         }
       }
-    },
+    }<% } %>,
 
     /**
      * `ng-min` annotates the sources before minifying. That is, it allows us
@@ -248,6 +298,16 @@ module.exports = function ( grunt ) {
             expand: true
           }
         ]
+      }
+    },
+    cssmin: {
+      compile: {
+        options: {
+          banner: '<%%= meta.banner %>'
+        },
+        files: {
+          '<%%= cssfile.compile.dest %>': '<%%= cssfile.compile.dest %>'
+        }
       }
     },
 
@@ -270,7 +330,7 @@ module.exports = function ( grunt ) {
         dest: '<%%= build_dir %>/assets/styles/<%%= pkg.name %>-<%%= pkg.version %>.css'
       },
       compile: {
-        dest: '<%%= cssfile.build.dest %>'
+        dest: '<%%= compile_dir %>/assets/styles/<%%= pkg.name %>-<%%= pkg.version %>.css'
       }
     },
 
@@ -302,7 +362,7 @@ module.exports = function ( grunt ) {
         eqnull: true
       },
       globals: {}
-    },
+    }<% if(coffee) { %>,
 
     /**
      * `coffeelint` does the same as `jshint`, but for CoffeeScript.
@@ -320,7 +380,7 @@ module.exports = function ( grunt ) {
           src: [ '<%%= app_files.coffeeunit %>' ]
         }
       }
-    },
+    }<% } %>,
 
     /**
      * HTML2JS is a Grunt plugin that takes all of your template files and
@@ -388,7 +448,7 @@ module.exports = function ( grunt ) {
           '<%%= build_dir %>/src/**/*.js',
           '<%%= html2js.common.dest %>',
           '<%%= html2js.app.dest %>',
-          '<%%= vendor_files.css %>',
+          //'<%%= vendor_files.css %>',
           '<%%= build_dir %>/assets/styles/**/*.css'
         ]
       },
@@ -451,8 +511,8 @@ module.exports = function ( grunt ) {
           '<%%= app_files.html %>',
           '<%%= app_files.atpl %>',
           '<%%= app_files.ctpl %>',
-          '<%%= build_dir %>/assets/styles/{,*/}*.css',
-          '<%%= app_files.sass %>',
+          '<%%= build_dir %>/assets/styles/{,*/}*.css'<% if (sass) { %>,
+          '<%%= app_files.sass %>'<% } %>,
           'assets/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       },
@@ -478,7 +538,7 @@ module.exports = function ( grunt ) {
           '<%%= app_files.js %>'
         ],
         tasks: [ 'jshint:src', 'karma:unit:run', 'copy:build_appjs' ]
-      },
+      }<% if (coffee) { %>,
 
       /**
        * When our CoffeeScript source files change, we want to run lint them and
@@ -489,7 +549,7 @@ module.exports = function ( grunt ) {
           '<%%= app_files.coffee %>'
         ],
         tasks: [ 'coffeelint:src', 'coffee:source', 'karma:unit:run', 'copy:build_appjs' ]
-      },
+      }<% } %>,
 
       /**
        * When assets are changed, copy them. Note that this will *not* copy new
@@ -499,7 +559,7 @@ module.exports = function ( grunt ) {
         files: [ 
           'src/assets/**/*'
         ],
-        tasks: [ 'copy:build_assets' ]
+        tasks: [ 'copy:build_app_assets' ]
       },
 
       /**
@@ -519,12 +579,12 @@ module.exports = function ( grunt ) {
           '<%%= app_files.ctpl %>'
         ],
         tasks: [ 'html2js' ]
-      },
+      }<% if (sass) { %>,
 
       sass: {
         files: ['<%%= app_files.sass %>'],
         tasks: ['copy:sass_files', 'compass:server']
-      },
+      }<% } %>,
 
       /**
        * When a JavaScript unit test file changes, we only want to lint it and
@@ -538,7 +598,7 @@ module.exports = function ( grunt ) {
         options: {
           livereload: false
         }
-      },
+      }<% if(coffee) { %>,
 
       /**
        * When a CoffeeScript unit test file changes, we only want to lint it and
@@ -552,7 +612,7 @@ module.exports = function ( grunt ) {
         options: {
           livereload: false
         }
-      },
+      }<% } %>
     },
 
 
@@ -608,15 +668,19 @@ module.exports = function ( grunt ) {
   grunt.registerTask( 'default', [ 'build', 'compile' ] );
 
   grunt.registerTask( 'builddev', [
-    'clean', 'html2js', 'jshint', 'copy:sass_files', 'compass:server', 'coffeelint', 'coffee', 'copy:build_app_assets', 'copy:build_app_css', 'copy:build_vendor_assets',
+    'clean', 'html2js', 'jshint'<% if (sass) { %>, 'copy:sass_files', 'compass:server'<% } %><% if(coffee) { %>, 'coffeelint', 'coffee'<% } %>, 'copy:build_app_assets', 'copy:build_app_css', 'copy:build_vendor_assets',
     'copy:build_appjs', 'copy:build_vendorcss', 'copy:build_vendorjs', 'index:build', 'karmaconfig',
     'karma:continuous' 
   ]);
+
+  <% if (hasFont) { %>
+  grunt.registerTask('install', ['copy:fonts_files']);
+  <% } %>
   /**
    * The `build` task gets your app ready to run for development and testing.
    */
   grunt.registerTask( 'build', [
-    'clean', 'html2js', 'jshint', 'copy:sass_files', 'compass:server', 'coffeelint', 'coffee', 'concat:build_css', 'copy:build_app_assets', 'copy:build_app_css', 'copy:build_vendor_assets',
+    'clean', 'html2js', 'jshint'<% if (sass) { %>, 'copy:sass_files', 'compass:compile'<% } %><% if(coffee) { %>, 'coffeelint', 'coffee'<% } %>, 'copy:build_app_assets', 'copy:build_app_css', 'copy:build_vendor_assets',
     'copy:build_appjs', 'copy:build_vendorcss', 'copy:build_vendorjs', 'index:build', 'karmaconfig',
     'karma:continuous' 
   ]);
@@ -626,7 +690,7 @@ module.exports = function ( grunt ) {
    * minifying your code.
    */
   grunt.registerTask( 'compile', [
-    'copy:compile_assets', 'ngmin', 'concat:compile_js', 'uglify', 'index:compile'
+    'build', 'copy:compile_assets', 'ngmin', 'concat:compile_css', 'concat:compile_js', 'cssmin', 'uglify', 'index:compile'
   ]);
 
   /**

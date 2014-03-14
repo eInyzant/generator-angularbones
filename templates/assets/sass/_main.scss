@@ -1,0 +1,35 @@
+<% if (sass) { %>
+@import "custom-variables";
+<% if (bootstrap) { %><% if (glyphicons) { %>
+$icon-font-path: "/assets/fonts/";
+<% } %>
+@import "bootstrap";
+<% } %><% if(!bootstrap && glyphicons) { %>
+$GlyphiconsPath: "/assets/fonts";
+@import "bootstrap-glyphicons";
+<% } %><% if (fontawesome) { %>
+$fa-font-path: "/assets/fonts";
+@import "font-awesome";
+<% } %><% if (foundationicons) { %>
+$fontFileName: "/assets/fonts/accessibility_foundicons";
+$fontName: "AccessibilityFoundicons";
+$classPrefix: "foundicon-a-";
+@import 'accessibility_foundicons';
+$fontFileName: "/assets/fonts/general_foundicons";
+$fontName: "GeneralFoundicons";
+$classPrefix: "foundicon-g-";
+@import 'general_foundicons';
+$fontFileName: "/assets/fonts/general_enclosed_foundicons";
+$fontName: "GeneralEnclosedFoundicons";
+$classPrefix: "foundicon-ge-";
+@import 'general_enclosed_foundicons';
+$fontFileName: "/assets/fonts/social_foundicons";
+$fontName: "SocialFoundicons";
+$classPrefix: "foundicon-s-";
+@import 'social_foundicons';
+<% } %><% if (ionicons) { %>
+$ionicons-font-path: "/assets/fonts";
+@import "ionicons";
+<% } %><% } %><% if(angularUiBootstrap) { %>
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+<% } %>

@@ -32,8 +32,8 @@ module.exports = {
     atpl: [ 'src/app/**/*.tpl.html' ],
     ctpl: [ 'src/common/**/*.tpl.html' ],
 
-    html: [ 'src/index.html' ],
-    sass: ['src/**/*.{scss,sass}'],
+    html: [ 'src/index.html' ]<% if (sass) { %>,
+    sass: ['src/**/*.{scss,sass}']<% } %>,
     css: ['src/assets/styles/**/*.css']
   },
 
@@ -67,24 +67,34 @@ module.exports = {
   vendor_files: {
     js: [
       'vendor/angular/angular.min.js',
-      'vendor/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
-      'vendor/angular-ui-router/release/angular-ui-router.js',
-      'vendor/angular-resource/angular-resource.min.js',
-      'vendor/angular-cookies/angular-cookies.min.js',
-      'vendor/angular-sanitize/angular-sanitize.min.js',
-      'vendor/angular-ui-utils/modules/route/route.js',
-      'vendor/bower-angular-placeholders/angular-placeholders.min.js'
+      'vendor/angular-ui-router/release/angular-ui-router.js'<%if (angularUiBootstrap) { %>,
+      'vendor/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js'<% } %><% if (resourceModule) { %>,
+      'vendor/angular-resource/angular-resource.min.js'<% } %><% if (cookiesModule) { %>,
+      'vendor/angular-cookies/angular-cookies.min.js'<% } %><% if (sanitizeModule) { %>,
+      'vendor/angular-sanitize/angular-sanitize.min.js'<% } %><% if (routeModule) { %>,
+      'vendor/angular-ui-utils/modules/route/route.js'<% } %><% if (placeholders) { %>,
+      'vendor/bower-angular-placeholders/angular-placeholders.min.js'<% } %>
     ],
     map: [
-      'vendor/angular/angular.min.js.map',
-      'vendor/angular-resource/angular-resource.min.js.map',
-      'vendor/angular-cookies/angular-cookies.min.js.map',
-      'vendor/angular-sanitize/angular-sanitize.min.js.map'
+      'vendor/angular/angular.min.js.map'<% if(resourceModule) { %>,
+      'vendor/angular-resource/angular-resource.min.js.map'<% } %><% if (cookiesModule) { %>,
+      'vendor/angular-cookies/angular-cookies.min.js.map'<% } %><% if(sanitizeModule) { %>,
+      'vendor/angular-sanitize/angular-sanitize.min.js.map'<% } %>
     ],
     css: [
-    ],
+      <% if(!sass) { %><% if (bootstrap) { %>
+      'vendor/bootstrap/dist/css/bootstrap.min.css',<% } %><% if (hasFont) { %><% if(!bootstrap && glyphicons) { %>
+      'vendor/sass-bootstrap-glyphicons/css/bootstrap-glyphicons.css',<% } %><% if (fontawesome) { %>
+      'vendor/fontawesome/css/font-awesome.min.css',<% } %><% if (foundationicons) { %>
+      'vendor/foundation-icons/foundation_icons_accessibility/stylesheet/accessibility_foundicons.css',
+      'vendor/foundation-icons/foundation_icons_general/stylesheet/general_foundicons.css',
+      'vendor/foundation-icons/foundation_icons_general_enclosedy/stylesheet/general_enclosed_foundicons.css',
+      'vendor/foundation-icons/foundation_icons_social/stylesheet/social_foundicons.css',<% } %><% if(ionicons) { %>
+      'vendor/ionicons/css/ionicons.min.css'<% } %><% } %>
+      <% } %>
+    ]<% if (sass) { %>,
     sass: [
-    ],
+    ]<% } %>,
     assets: [
     ]
   },
