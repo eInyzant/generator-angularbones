@@ -1,10 +1,10 @@
 <section class="row-fluid fonts">
   <h1 class="page-header">How to use fonts ?</h1>
   <ul>
-    <% if(glyphicons) { %><li><a href="#/fonts/#glyphicons">Glyphicons</a></li><% } %>
-    <% if(fontawesome) { %><li><a href="#/fonts/#fontawesome">Font Awesome</a></li><% } %>
-    <% if(ionicons) { %><li><a href="#/fonts/#ionicons">ionicons</a></li><% } %>
-    <% if(foundationicons) { %><li><a href="#/fonts/#foundationicons">Foundation Icon Fonts</a></li><% } %>
+    <% if(glyphicons) { %><li><a ng-click="scrollTo('glyphicons')">Glyphicons</a></li><% } %>
+    <% if(fontawesome) { %><li><a ng-click="scrollTo('fontawesome')">Font Awesome</a></li><% } %>
+    <% if(ionicons) { %><li><a ng-click="scrollTo('ionicons')">ionicons</a></li><% } %>
+    <% if(foundationicons) { %><li><a ng-click="scrollTo('foundationicons')">Foundation Icon Fonts</a></li><% } %>
   </ul>
 
   <% if(glyphicons) { %>

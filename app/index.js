@@ -51,10 +51,6 @@ var Generator = module.exports = function Generator(args, options) {
     args: args
   });
 
-  //this.hookFor('angularbones:main', {
-    //args: args
-  //});
-
   this.on('end', function () {
     this.installDependencies({
       skipInstall: this.options['skip-install'],
@@ -202,20 +198,58 @@ Generator.prototype.askForSass = function askForSass() {
   }.bind(this));
 };
 
-Generator.prototype.askForBootstrap = function askForBootstrap() {
+Generator.prototype.askForCssFramework = function askForCssFramework() {
+  this.hasCssFramework = false;
   var cb = this.async();
 
-  this.prompt([{
-    type: 'confirm',
-    name: 'bootstrap',
-    message: 'Would you like to include Bootstrap?',
-    default: true
-  }], function (props) {
-    this.bootstrap = props.bootstrap;
+  var prompts = [{
+    type: 'checkbox',
+    name: 'css',
+    message: 'Would your like to include a Css Framework?',
+    choices: [{
+      value: 'bootstrap',
+      name: 'Bootstrap Twitter 3',
+      checked: true
+    }, {
+      value: 'normalize',
+      name: 'Normalize.css (Already included in bootstrap twitter)',
+      checked: false,
+    }, {
+      value: 'foundation',
+      name: 'Zurb Foundation 5',
+      checked: false
+    }]
+  }];
+
+  this.prompt(prompts, function (props) {
+    var hasCss = function (css) { return props.css.indexOf(css) !== -1; };
+    this.bootstrap = hasCss('bootstrap');
+    this.normalize = hasCss('normalize');
+    this.foundation = hasCss('foundation');
+
+    var css = [];
+
+    if (this.bootstrap) {
+      css.push("'bootstrap'");
+    }
+
+    if (this.normalize) {
+      css.push("'normalize'");
+    }
+
+    if (this.foundation) {
+      css.push("'foundation'");
+    }
+
+    if (css.length) {
+      this.hasCssFramework = true;
+      this.env.options.css = '\n    ' + css.join(',\n    ') + '\n  ';
+    }
 
     cb();
   }.bind(this));
 };
+
 
 Generator.prototype.askForAngularUiBootstrap = function askForAngularUiBootstrap() {
   var cb = this.async();
@@ -236,6 +270,25 @@ Generator.prototype.askForAngularUiBootstrap = function askForAngularUiBootstrap
   }.bind(this));
 };
 
+Generator.prototype.askForAngularFoundation = function askForAngularFoundation() {
+  var cb = this.async();
+  var foundation = this.foundation;
+
+  this.prompt([{
+    type: 'confirm',
+    name: 'angularFoundation',
+    message: 'Would you like to use Angular Foundation?',
+    default: true,
+    when: function(props) {
+      return foundation;
+    }
+  }], function (props) {
+    this.angularFoundation = props.angularFoundation;
+
+    cb();
+  }.bind(this));
+};
+
 Generator.prototype.askForFonts = function askForFonts() {
   this.hasFont = false;
   var cb = this.async();
@@ -245,21 +298,21 @@ Generator.prototype.askForFonts = function askForFonts() {
     name: 'fonts',
     message: 'Which fonts would you like to use?',
     choices: [{
-      value: 'glyphicons',
-      name: 'glyphicons',
-      checked: true,
-    }, {
       value: 'fontawesome',
       name: 'fontawesome',
       checked: true
     }, {
+      value: 'glyphicons',
+      name: 'glyphicons',
+      checked: false,
+    }, {
       value: 'foundationicons',
       name: 'foundationicons',
-      checked: true
+      checked: false
     }, {
       value: 'ionicons',
       name: 'ionicons',
-      checked: true
+      checked: false
     }]
   }];
 
@@ -333,8 +386,8 @@ Generator.prototype.askForModules = function askForModules() {
       name: 'angular-sanitize.js',
       checked: true
     }, {
-      value: 'routeModule',
-      name: 'angular-route.js',
+      value: 'animateModule',
+      name: 'angular-animate.js',
       checked: true
     }]
   }];
@@ -344,7 +397,7 @@ Generator.prototype.askForModules = function askForModules() {
     this.resourceModule = hasMod('resourceModule');
     this.cookiesModule = hasMod('cookiesModule');
     this.sanitizeModule = hasMod('sanitizeModule');
-    this.routeModule = hasMod('routeModule');
+    this.animateModule = hasMod('animateModule');
 
     var angMods = [];
 
@@ -358,9 +411,9 @@ Generator.prototype.askForModules = function askForModules() {
     if (this.sanitizeModule) {
       angMods.push("'ngSanitize'");
     }
-    if (this.routeModule) {
-      angMods.push("'ngRoute'");
-      this.env.options.ngRoute = true;
+    if (this.animateModule) {
+      angMods.push("'ngAnimate'");
+      this.env.options.ngAnimte = true;
     }
 
     if (angMods.length) {
@@ -384,6 +437,7 @@ Generator.prototype.packageFiles = function () {
   this.copy('../../templates/common/_bowerrc', '.bowerrc');
   this.template('../../templates/common/_bower.json', 'bower.json');
   this.template('../../templates/common/_package.json', 'package.json');
+  this.template('../../templates/common/_package.json', './src/assets/json/about.json');
   this.template('../../templates/common/build.config.js', 'build.config.js');
   this.template('../../templates/common/Gruntfile.js', 'Gruntfile.js');
 };
@@ -395,11 +449,17 @@ Generator.prototype.applicationFiles = function() {
     if (this.hasFont) {
       this.copy('../../templates/app/modules/fonts/fonts.css', './src/app/fonts/fonts.scss');
     }
+    if (this.hasCssFramework) {
+      this.copy('../../templates/app/modules/cssFramework/cssFramework.css', './src/app/cssFramework/cssFramework.scss');
+    }
   } else {
     this.copy('../../templates/app/modules/home/home.css', './src/app/home/home.css');
     this.copy('../../templates/app/modules/about/about.css', './src/app/about/about.css');
     if (this.hasFont) {
       this.copy('../../templates/app/modules/fonts/fonts.css', './src/app/fonts/fonts.css');
+    }
+    if (this.hasCssFramework) {
+      this.copy('../../templates/app/modules/cssFramework/cssFramework.css', './src/app/cssFramework/cssFramework.css');
     }
   }
   // Application files :
@@ -407,18 +467,35 @@ Generator.prototype.applicationFiles = function() {
   this.template('../../templates/app/app.spec.js', './src/app/app.spec.js');
 
   // Home Module
-  this.template('../../templates/app/modules/home/home.js', './src/app/home/home.js');
+  this.template('../../templates/app/modules/home/home.config.js', './src/app/home/home.config.js');
+  this.template('../../templates/app/modules/home/home.ctrl.js', './src/app/home/home.ctrl.js');
+  this.template('../../templates/app/modules/home/home.services.js', './src/app/home/home.services.js');
   this.template('../../templates/app/modules/home/home.spec.js', './src/app/home/home.spec.js');
 
   // About Module
   this.template('../../templates/app/modules/about/_about.tpl.html', './src/app/about/about.tpl.html');
-  this.template('../../templates/app/modules/about/about.js', './src/app/about/about.js');
+  this.template('../../templates/app/modules/about/about.config.js', './src/app/about/about.config.js');
+  this.template('../../templates/app/modules/about/about.ctrl.js', './src/app/about/about.ctrl.js');
+  this.template('../../templates/app/modules/about/about.services.js', './src/app/about/about.services.js');
 
+  // Fonts Module
   if (this.hasFont) {
-    // Fonts Module
     this.template('../../templates/app/modules/fonts/_fonts.tpl.html', './src/app/fonts/fonts.tpl.html');
-    this.template('../../templates/app/modules/fonts/fonts.js', './src/app/fonts/fonts.js');
+    this.template('../../templates/app/modules/fonts/fonts.config.js', './src/app/fonts/fonts.config.js');
+    this.template('../../templates/app/modules/fonts/fonts.ctrl.js', './src/app/fonts/fonts.ctrl.js');
   }
+
+  // CssFramework Module
+  if (this.hasCssFramework) {
+    this.template('../../templates/app/modules/cssFramework/_cssFramework.tpl.html', './src/app/cssFramework/cssFramework.tpl.html');
+    this.template('../../templates/app/modules/cssFramework/cssFramework.config.js', './src/app/cssFramework/cssFramework.config.js');
+    this.template('../../templates/app/modules/cssFramework/cssFramework.ctrl.js', './src/app/cssFramework/cssFramework.ctrl.js');
+  }
+
+  // Common Modules 
+  // Anchor Service 
+  this.template('../../templates/app/common/anchor/anchor.config.js', './src/common/anchor/anchor.config.js');
+  this.template('../../templates/app/common/anchor/anchor.services.js', './src/common/anchor/anchor.services.js');
 
 };
 Generator.prototype.assetsFiles = function() {
@@ -440,7 +517,11 @@ Generator.prototype._injectDependencies = function _injectDependencies() {
     var howToInstall = '\n###########################';
     howToInstall += '\n########## END ############';
     howToInstall += '\n###########################';
-    howToInstall += chalk.yellow.bold('\nInstallation is complete!');
+    howToInstall += chalk.yellow.bold('\nInstallation is');
+    if (this.hasFont) {
+      howToInstall += chalk.red.bold(' ALMOST');
+    }
+    howToInstall += chalk.yellow.bold(' complete!');
     howToInstall += '\nBe sure to run `npm install & bower install` if it failed (should be automatic)';
     if (this.hasFont) {
       howToInstall += '\n\nTo complete your installation you must install font files by running:';

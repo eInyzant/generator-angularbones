@@ -1,0 +1,74 @@
+<section class="row-fluid cssFramework">
+  <h1>Css Framework</h1>
+  <ul><% if(bootstrap) {%>
+    <li><a ng-click="scrollTo('bootstrap')">Bootstrap Twitter 3</a></li><% } %><% if (normalize) {%>
+    <li><a ng-click="scrollTo('normalize')">Normalize Css</a></li><% } %><% if (foundation) { %>
+    <li><a ng-click="scrollTo('foundation')">Zurb Foundation 5</a></li><% } %>
+  </ul>
+  <% if (bootstrap) { %>
+  <h2 id="bootstrap">Bootstrap Twitter 3</h2>
+  <ul>
+    <li>Website : <a href="http://getbootstrap.com/" target="_blank">Bootstrap Twitter 3</a></li>
+  </ul>
+  <h3 class="page-header">How to use Bootstrap Twitter ?</h3>
+  <p>Angular Bones includes Bootstrap Twitter 3. Please refer to the <a href="http://getbootstrap.com/">official documentation</a> for more informations about how to use it</p>
+  <p>Angular Bones do not includes javascript plugins but you can use the <a href="http://angular-ui.github.io/bootstrap/">Angular Bootstrap Ui</a> native Angular Js directives.</p>
+  <ul>
+    <li><a href="http://getbootstrap.com/css/">How to use Bootstrap Twitter CSS?</a></li>
+    <li><a href="http://getbootstrap.com/component/">How to use Bootstrap Twitter Component?</a></li><% if(angularUiBootstrap) { %>
+    <li><a href="http://angular-ui.github.io/bootstrap/#/getting_started">Getting started with Angular UI Bootstrap</a></li><% } %>
+  </ul>
+</section>
+<section class="row-fluid">
+    <h3>Bootstrap Twitter CSS Examples</h3>
+    <h4>Buttons Sizes</h4>
+    <p>Fancy larger or smaller buttons? Add <code>.btn-lg</code>, <code>.btn-sm</code>, or <code>.btn-xs</code> for additional sizes.</p>
+    <div class="bs-example">
+      <p>
+        <button type="button" class="btn btn-primary btn-lg">Large button</button>
+        <button type="button" class="btn btn-default btn-lg">Large button</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-primary">Default button</button>
+        <button type="button" class="btn btn-default">Default button</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-primary btn-sm">Small button</button>
+        <button type="button" class="btn btn-default btn-sm">Small button</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-primary btn-xs">Extra small button</button>
+        <button type="button" class="btn btn-default btn-xs">Extra small button</button>
+      </p>
+  </div>
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;p&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-primary btn-lg"</span><span class="nt">&gt;</span>Large button<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-default btn-lg"</span><span class="nt">&gt;</span>Large button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-primary"</span><span class="nt">&gt;</span>Default button<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-default"</span><span class="nt">&gt;</span>Default button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-primary btn-sm"</span><span class="nt">&gt;</span>Small button<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-default btn-sm"</span><span class="nt">&gt;</span>Small button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-primary btn-xs"</span><span class="nt">&gt;</span>Extra small button<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">class=</span><span class="s">"btn btn-default btn-xs"</span><span class="nt">&gt;</span>Extra small button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+</code></pre></div>
+</section>
+<% } %><% if(normalize) { %>
+<section class="row-fluid normalize">
+  <h2 id="normalize">Normalize Css</h2>
+  <ul>
+    <li>Website : <a href="http://necolas.github.io/normalize.css/" target="_blank">Normalize Css</a></li>
+  </ul><% } %><% if(foundation) { %>
+</section>
+<section class="row-fluid foundation">
+  <h2 id="foundation">Zurb Foundation 5</h2>
+  <ul>
+    <li>Website : <a href="http://foundation.zurb.com/" target="_blank">Zurb Foundationss</a></li>
+  </ul><% } %>
+</section>

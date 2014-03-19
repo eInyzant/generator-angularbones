@@ -12,16 +12,16 @@
  * The dependencies block here is also where component dependencies should be
  * specified, as shown below.
  */
-angular.module( '<%= scriptAppName %>.home', [
-  'ui.state'
-])
+var <%= scriptAppName %>Home = angular.module( '<%= scriptAppName %>.home', [
+  'ui.router.state'
+]);
 
 /**
  * Each section or module of the site can also have its own routes. AngularJS
  * will handle ensuring they are all available at run-time, but splitting it
  * this way makes each module more "self-contained".
  */
-.config(function config( $stateProvider ) {
+<%= scriptAppName %>Home.config(function config( $stateProvider ) {
   $stateProvider.state( 'home', {
     url: '/home',
     views: {
@@ -32,13 +32,4 @@ angular.module( '<%= scriptAppName %>.home', [
     },
     data:{ pageTitle: 'Home' }
   });
-})
-
-/**
- * And of course we define a controller for our route.
- */
-.controller( 'HomeCtrl', function HomeController( $scope ) {
-})
-
-;
-
+});

@@ -66,23 +66,28 @@ module.exports = {
    */
   vendor_files: {
     js: [
-      'vendor/angular/angular.min.js',
-      'vendor/angular-ui-router/release/angular-ui-router.js'<%if (angularUiBootstrap) { %>,
+      'vendor/angular/angular.min.js'<% if(animateModule) { %>,
+      'vendor/angular-animate/angular-animate.min.js'<% } %>,
+      'vendor/angular-ui-router/release/angular-ui-router.js'<% if(angularFoundation) { %>,
+      'vendor/angular-foundation/mm-foundation-tpls.min.js'<% } %><%if (angularUiBootstrap) { %>,
       'vendor/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js'<% } %><% if (resourceModule) { %>,
       'vendor/angular-resource/angular-resource.min.js'<% } %><% if (cookiesModule) { %>,
       'vendor/angular-cookies/angular-cookies.min.js'<% } %><% if (sanitizeModule) { %>,
-      'vendor/angular-sanitize/angular-sanitize.min.js'<% } %><% if (routeModule) { %>,
-      'vendor/angular-ui-utils/modules/route/route.js'<% } %><% if (placeholders) { %>,
+      'vendor/angular-sanitize/angular-sanitize.min.js'<% } %><% if (placeholders) { %>,
       'vendor/bower-angular-placeholders/angular-placeholders.min.js'<% } %>
     ],
     map: [
-      'vendor/angular/angular.min.js.map'<% if(resourceModule) { %>,
+      'vendor/angular/angular.min.js.map'<% if(animateModule) { %>,
+      'vendor/angular-animate/angular-animate.min.js.map'<% } %><% if(resourceModule) { %>,
       'vendor/angular-resource/angular-resource.min.js.map'<% } %><% if (cookiesModule) { %>,
       'vendor/angular-cookies/angular-cookies.min.js.map'<% } %><% if(sanitizeModule) { %>,
       'vendor/angular-sanitize/angular-sanitize.min.js.map'<% } %>
     ],
     css: [
-      <% if(!sass) { %><% if (bootstrap) { %>
+      <% if(normalize) { %>
+      'vendor/normalize.css/normalize.css',<% } %>
+      <% if(!sass) { %><% if(foundation) { %>
+      'vendor/bower-foundation/css/foundation.min.css',<% } %><% if (bootstrap) { %>
       'vendor/bootstrap/dist/css/bootstrap.min.css',<% } %><% if (hasFont) { %><% if(!bootstrap && glyphicons) { %>
       'vendor/sass-bootstrap-glyphicons/css/bootstrap-glyphicons.css',<% } %><% if (fontawesome) { %>
       'vendor/fontawesome/css/font-awesome.min.css',<% } %><% if (foundationicons) { %>

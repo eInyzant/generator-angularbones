@@ -4,7 +4,7 @@
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
-        <% if(hasFont && glyphicons) { %><span class="glyphicon glyphicon-justify"></span><% } %>
+        <% if(hasFont && fontawesome) { %><span class="fa fa-bars"></span><% } %>
       </button>
     </div>
 
@@ -13,32 +13,37 @@
       <ul class="nav navbar-nav">
         <li ui-route="/home" ng-class="{active:$uiRoute}">
           <a href="#/home">
-            <% if(hasFont && glyphicons) { %><i class="glyphicon glyphicon-home"></i><% } %>
+            <% if(hasFont && fontawesome) { %><i class="fa fa-home"></i><% } %>
             Home
           </a>
-        </li>
         <li ui-route="/about" ng-class="{active:$uiRoute}">
           <a href="#/about">
-            <% if (hasFont && glyphicons) { %><i class="glyphicon glyphicon-circle_info"></i><% } %>
+            <% if (hasFont && fontawesome) { %><i class="fa fa-info-circle"></i><% } %>
             What is it?
           </a>
-        </li>
-        <% if (hasFont) { %>
+        </li><% if(hasCssFramework) { %>
+        <li ui-route="/cssFramework" ng-class="{active:$uiRoute}">
+          <a href="#/cssFramework">
+            <% if (hasFont && fontawesome) { %><i class="fa fa-css3"></i><% } %>
+            Css Framework
+          </a>
+        </li><% } %><% if (hasFont) { %>
         <li ui-route="/fonts" ng-class="{active:$uiRoute}">
           <a href="#/fonts">
-            <% if (hasFont && glyphicons) { %><i class="glyphicon glyphicon-pencil"></i><% } %>
+            <% if (hasFont && fontawesome) { %><i class="fa fa-font"></i><% } %>
             How to use Fonts?
           </a>
         </li>
         <% } %>
         <li>
           <a href="https://github.com/eInyzant/generator-angularbones">
+            <% if (hasFont && fontawesome) { %><i class="fa fa-github-alt"></i><% } %>
             Github
           </a>
         </li>
         <li>
           <a href="https://github.com/eInyzant/generator-angularbones/issues">
-            <% if(hasFont && glyphicons) { %><i class="glyphicon glyphicon-conversation"></i><% } %>
+            <% if (hasFont && fontawesome) { %><i class="fa fa-comments-o"></i><% } %>
             Support
           </a>
         </li>

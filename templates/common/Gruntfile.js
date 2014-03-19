@@ -250,7 +250,9 @@ module.exports = function ( grunt ) {
         javascriptsDir: '<%%= src_dir %>/assets/scripts',
         fontsDir: '<%%= src_dir %>/assets/styles/fonts',
         importPath: [
-          'vendor'<% if (bootstrap) { %>,
+          'src/sass',
+          'vendor'<% if(foundation) { %>,
+          'vendor/foundation/scss'<% } %><% if (bootstrap) { %>,
           'vendor/bootstrap-sass-official/vendor/assets/stylesheets'<% } %><% if(hasFont) { %><% if(!bootstrap && glyphicons) { %>,
           'vendor/sass-bootstrap-glyphicons/scss'<% } %><% if(fontawesome) { %>,
           'vendor/fontawesome/scss'<% } %><%if (foundationicons) { %>,

@@ -1,8 +1,8 @@
-angular.module( '<%= scriptAppName %>.fonts', [
-  'ui.state'
-])
+var <%= scriptAppName %>Fonts = angular.module( '<%= scriptAppName %>.fonts', [
+  'ui.router.state'
+]);
 
-.config(function config( $stateProvider ) {
+<%= scriptAppName %>Fonts.config(function config( $stateProvider ) {
   $stateProvider.state( 'fonts', {
     url: '/fonts',
     views: {
@@ -13,9 +13,4 @@ angular.module( '<%= scriptAppName %>.fonts', [
     },
     data:{ pageTitle: 'Fonts' }
   });
-})
-
-.controller( 'FontsCtrl', function FontsCtrl( $scope ) {
-})
-
-;
+});

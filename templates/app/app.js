@@ -1,11 +1,15 @@
 angular.module( '<%= scriptAppName %>', [
   'templates-app',
   'templates-common',
+  '<%= scriptAppName %>.anchor',
   '<%= scriptAppName %>.home',
   '<%= scriptAppName %>.about'<% if(hasFont) { %>,
-  '<%= scriptAppName %>.fonts'<% } %>,
-  'ui.state',
-  'ui.route'<% if(angularUiBootstrap) {%>,
+  '<%= scriptAppName %>.fonts'<% } %><% if(hasCssFramework) { %>,
+  '<%= scriptAppName %>.cssFramework'<% } %><% if(animateModule) { %>,
+  'ngAnimate'<% } %>,
+  'ui.router',
+  'ui.router.state'<% if(angularFoundation) { %>,
+  'mm.foundation'<% } %><% if(angularUiBootstrap) {%>,
   'ui.bootstrap'<% } %>
 ])
 

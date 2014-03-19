@@ -4,6 +4,8 @@
 $icon-font-path: "/assets/fonts/";
 <% } %>
 @import "bootstrap";
+<% } %><% if(foundation) { %>
+@import "foundation";
 <% } %><% if(!bootstrap && glyphicons) { %>
 $GlyphiconsPath: "/assets/fonts";
 @import "bootstrap-glyphicons";
@@ -32,4 +34,5 @@ $ionicons-font-path: "/assets/fonts";
 @import "ionicons";
 <% } %><% } %><% if(angularUiBootstrap) { %>
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-<% } %>
+<% } %><% if (hasFont && fontawesome) { %>
+.nav a, .nav i.fa {font-size: 18px; }<% } %>
