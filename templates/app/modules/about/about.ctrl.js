@@ -1,7 +1,18 @@
-<%= scriptAppName %>About.controller( 'AboutCtrl', ['$scope', 'AboutService',
-  function AboutCtrl($scope, AboutService) {
+(function() {
+  'use strict';
+
+  /**
+   * ngInject
+   */
+  function AboutController($scope, AboutService) {
     AboutService.getAboutData(function(data) {
       $scope.aboutData = data;
     });
   }
-]);
+
+  angular
+    .module('<%= scriptAppName %>')
+    .controller('AboutController', AboutController)
+  ;
+
+})();

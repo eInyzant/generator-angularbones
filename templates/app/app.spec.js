@@ -1,17 +1,22 @@
-describe( 'AppCtrl', function() {
-  describe( 'isCurrentUrl', function() {
-    var AppCtrl, $location, $scope;
+(function() {
+  'use strict';
 
-    beforeEach( module( '<%= scriptAppName %>' ) );
+  describe( 'AppController', function() {
+    describe( 'isCurrentUrl', function() {
+      var AppController, $location, $scope;
 
-    beforeEach( inject( function( $controller, _$location_, $rootScope ) {
-      $location = _$location_;
-      $scope = $rootScope.$new();
-      AppCtrl = $controller( 'AppCtrl', { $location: $location, $scope: $scope });
-    }));
+      beforeEach( module( '<%= scriptAppName %>' ) );
 
-    it( 'should pass a dummy test', inject( function() {
-      expect( AppCtrl ).toBeTruthy();
-    }));
+      beforeEach( inject( function( $controller, _$location_, $rootScope ) {
+        $location = _$location_;
+        $scope = $rootScope.$new();
+        AppController = $controller( 'AppController', { $location: $location, $scope: $scope });
+      }));
+
+      it( 'should pass a dummy test', inject( function() {
+        expect( AppController ).toBeTruthy();
+      }));
+    });
   });
-});
+
+})();

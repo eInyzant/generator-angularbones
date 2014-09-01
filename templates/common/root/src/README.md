@@ -9,15 +9,16 @@ tests of such code.
 src/
   |- app/
   |  |- about/
+  |  |- cssFramework/
   |  |- home/
-  |  |- app.js
+  |  |- _app.js
   |  |- app.spec.js
   |- assets/
   |- common/
-  |  |- plusOne/
-  |- less/
-  |  |- main.less
-  |  |- variables.less
+  |  |- anchor/
+  |- sass/
+  |  |- custom-variables.scss
+  |  |- main.scss
   |- index.html
 ```
 
@@ -27,7 +28,7 @@ src/
   [Read more &raquo;](assets/README.md)
 - `src/common/` - third-party libraries or components likely to be reused in
   another application. [Read more &raquo;](common/README.md)
-- `src/less/` - LESS CSS files. [Read more &raquo;](less/README.md)
+- `src/sass/` - SASS CSS files.
 - `src/index.html` - this is the HTML document of the single-page application.
   See below.
 
@@ -38,7 +39,7 @@ See each directory for a detailed explanation.
 The `index.html` file is the HTML document of the single-page application (SPA)
 that should contain all markup that applies to everything in the app, such as
 the header and footer. It declares with `ngApp` that this is `ngBoilerplate`,
-specifies the main `AppCtrl` controller, and contains the `ngView` directive
+specifies the main `AppController` controller, and contains the `ngView` directive
 into which route templates are placed.
 
 Unlike any other HTML document (e.g. the templates), `index.html` is compiled as

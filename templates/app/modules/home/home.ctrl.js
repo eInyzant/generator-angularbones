@@ -1,7 +1,15 @@
-/**
- * And of course we define a controller for our route.
- */
-<%= scriptAppName %>Home.controller( 'HomeCtrl', ['$scope', 
+(function() {
+  
+  'use strict';
+
+  /**
+   * ngInject
+   */
   function HomeController($scope) {
   }
-]);
+
+  angular
+    .module('<%= scriptAppName %>')
+    .controller('HomeController', HomeController)
+  ;
+})();

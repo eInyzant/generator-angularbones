@@ -1,16 +1,25 @@
-var <%= scriptAppName %>Fonts = angular.module( '<%= scriptAppName %>.fonts', [
-  'ui.router.state'
-]);
+(function() {
+  'use strict';
 
-<%= scriptAppName %>Fonts.config(function config( $stateProvider ) {
-  $stateProvider.state( 'fonts', {
-    url: '/fonts',
-    views: {
-      "main": {
-        controller: 'FontsCtrl',
-        templateUrl: 'fonts/fonts.tpl.html'
-      }
-    },
-    data:{ pageTitle: 'Fonts' }
-  });
-});
+  /**
+   * ngInject
+   */
+  function config($stateProvider) {
+    $stateProvider.state( 'fonts', {
+      url: '/fonts',
+      views: {
+        'main': {
+          controller: 'FontsController',
+          templateUrl: 'fonts/fonts.tpl.html'
+        }
+      },
+      data:{ pageTitle: 'Fonts' }
+    });
+  }
+
+  angular
+    .module('<%= scriptAppName %>')
+    .config(config)
+  ;
+
+})();

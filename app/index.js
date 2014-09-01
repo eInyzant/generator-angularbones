@@ -463,7 +463,7 @@ Generator.prototype.applicationFiles = function() {
     }
   }
   // Application files :
-  this.template('../../templates/app/app.js', './src/app/app.js');
+  this.template('../../templates/app/_app.js', './src/app/_app.js');
   this.template('../../templates/app/app.spec.js', './src/app/app.spec.js');
 
   // Home Module
@@ -494,7 +494,6 @@ Generator.prototype.applicationFiles = function() {
 
   // Common Modules 
   // Anchor Service 
-  this.template('../../templates/app/common/anchor/anchor.config.js', './src/common/anchor/anchor.config.js');
   this.template('../../templates/app/common/anchor/anchor.services.js', './src/common/anchor/anchor.services.js');
 
 };

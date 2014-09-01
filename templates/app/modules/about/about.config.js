@@ -1,17 +1,25 @@
-var <%= scriptAppName %>About = angular.module( '<%= scriptAppName %>.about', [
-  'ui.router.state'<% if(placeholders) { %>,
-  'placeholders'<% } %>
-]);
+(function() {
+  'use strict';
 
-<%= scriptAppName %>About.config(function config( $stateProvider ) {
-  $stateProvider.state( 'about', {
-    url: '/about',
-    views: {
-      "main": {
-        controller: 'AboutCtrl',
-        templateUrl: 'about/about.tpl.html'
-      }
-    },
-    data:{ pageTitle: 'About Angular Bones Generator?' }
-  });
-});
+  /**
+   * ngInject
+   */
+  function config($stateProvider) {
+    $stateProvider.state( 'about', {
+      url: '/about',
+      views: {
+        'main': {
+          controller: 'AboutController',
+          templateUrl: 'about/about.tpl.html'
+        }
+      },
+      data:{ pageTitle: 'About Angular Bones Generator?' }
+    });
+  }
+
+  angular
+    .module('<%= scriptAppName %>')
+    .config(config)
+  ;
+
+})();

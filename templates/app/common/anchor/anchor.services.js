@@ -1,5 +1,7 @@
-<%= scriptAppName %>Anchor.service('AnchorService', ['$location', '$anchorScroll',
-  function($location, $anchorScroll) {
+(function() {
+  'use strict';
+
+  function AnchorService($location, $anchorScroll) {
     this.timer = null;
     this.from = 0;
     this.to = 0;
@@ -67,4 +69,9 @@
       } return y;
     };
   }
-]);
+
+  angular
+    .module('<%= scriptAppName %>')
+    .service('AnchorService', AnchorService)
+  ;
+})();
